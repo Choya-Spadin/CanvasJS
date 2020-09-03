@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   const socket = io.connect();
 
+  const botaoLimpar = document.querySelector("#btnLimpar");
+
   const pincel = {
     ativo: false,
     movendo: false,
@@ -39,6 +41,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   socket.on("desenhar", (linha) => {
     desenharLinha(linha);
+  });
+
+  botaoLimpar.onclick = () => {
+    socket.emit("limpar", { pos: 0, posAnterior: 0 });
+    pincel.movimento = false;
+  };
+
+  socket.on("limpar", (linha) => {
+    contexto.clearRect(0, 0, tela.width, tela.height);
+    pincel.ativo = false;
+    pincel.movimento = false;
+    pincel.pos = linha;
+    pincel.posAnterior = null;
   });
 
   const ciclo = () => {
